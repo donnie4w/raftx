@@ -187,7 +187,7 @@ type Metrics struct {
 
 	// ProposalCount is the total number of proposals (log entries) that have been submitted to the Raft cluster.
 	// This includes both successful and failed proposals.
-	// 表表示提交给 Raft 集群的提案总数（即日志条目）。这包括了成功和失败的提案。通过监控这个度量，可以了解系统的活跃程度和处理能力
+	// 表示提交给 Raft 集群的提案总数（即日志条目）。这包括了成功和失败的提案。通过监控这个度量，可以了解系统的活跃程度和处理能力
 	ProposalCount int64
 
 	// ProposalFailed is the count of proposals that failed to commit due to various reasons such as network issues or conflicts.
@@ -197,7 +197,7 @@ type Metrics struct {
 
 	// MemProposalCount is the total number of proposals in mem that have been submitted to the Raft cluster.
 	// This includes both successful and failed proposals.
-	// 表表示提交给 Raft集群的易失性提案总数。这包括了成功和失败的提案。通过监控这个度量，可以了解系统的活跃程度和处理能力
+	// 表示提交给 Raft集群的易失性提案总数。这包括了成功和失败的提案。通过监控这个度量，可以了解系统的活跃程度和处理能力
 	MemProposalCount int64
 
 	// MemProposalFailed is the count of proposals that failed to commit due to various reasons such as network issues or conflicts.
@@ -215,10 +215,10 @@ type Metrics struct {
 	// leader 无法通讯的其它集群节点
 	LostNodes map[int64]string
 
-	//metricsBat
+	//MetricsBat the metrics data for raftx
 	MetricsBat *MetricsBat
 
-	//
+	//MetricsMem the metrics data for mem
 	MetricsMem *MetricsMem
 }
 
