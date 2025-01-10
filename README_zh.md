@@ -100,7 +100,7 @@ RaftX 是一种对经典 Raft 协议的扩展，结合了 Multi-Paxos、ZAB（Zo
 ### **安装项目**
 
 ```bash
-go get https://github.com/donnie4w/raftx
+go get github.com/donnie4w/raftx
 ```
 
 

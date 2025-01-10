@@ -100,7 +100,7 @@ In distributed systems, consensus algorithms are typically used to coordinate th
 ### **Project Installation**
 
 ```bash
-go get https://github.com/donnie4w/raftx
+go get github.com/donnie4w/raftx
 ```
 
 ### **API Call Example**
