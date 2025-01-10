@@ -20,6 +20,7 @@ RaftX is an extension of the classic Raft protocol, integrating the advantages o
 
 In distributed systems, consensus algorithms are typically used to coordinate the state among multiple nodes to ensure data consistency. The traditional **Raft** protocol is easy to understand but has certain limitations in scenarios with high concurrency, many nodes, and large-scale data synchronization. Therefore, RaftX extends Raft by incorporating the concurrent proposal capability of **Multi-Paxos** and the data synchronization feature of **ZAB**, providing a more efficient and stable distributed consensus solution.
 
+[raftx wiki](https://tlnet.top/wiki/raftx)
 ---
 
 ## **Feature Overview**
