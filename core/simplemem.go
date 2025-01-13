@@ -69,6 +69,8 @@ type simpleMem struct {
 	ctx context.Context
 
 	cancel context.CancelFunc
+
+	hasInit bool
 }
 
 // newMem initializes a new instance of simpleMem and starts background goroutines for expiring data and checking command execution.
@@ -146,11 +148,16 @@ func (sm *simpleMem) Apply(mb *stub.MemBean) {
 
 // initCursor initializes the cursor position, ensuring it does not exceed the known maximum ID.
 func (sm *simpleMem) initCursor(id int64) {
-	if sm.cursor.Load() == 0 && id > 1 {
-		sm.idMux.Lock()
-		defer sm.idMux.Unlock()
-		if sm.cursor.Load() == 0 {
-			sm.cursor.Store(id - 1)
+	if !sm.hasInit {
+		if sm.cursor.Load() == 0 && id > 1 {
+			sm.idMux.Lock()
+			defer sm.idMux.Unlock()
+			sm.hasInit = true
+			if sm.cursor.Load() == 0 && id > sm.node.memLogEntrySyncLimit {
+				sm.cursor.Store(id - sm.node.memLogEntrySyncLimit)
+			} else if sm.cursor.Load() == 0 {
+				sm.cursor.Store(1)
+			}
 		}
 	}
 }
