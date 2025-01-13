@@ -166,6 +166,9 @@ type Config struct {
 	// MemLogEntryLimit capacity upper limit of the log container
 	MemLogEntryLimit int64
 
+	// MemLogEntrySyncLimit capacity upper limit of the log container
+	MemLogEntrySyncLimit int64
+
 	// StandAlone Flag indicating if the node operates in standalone mode.
 	StandAlone bool
 
