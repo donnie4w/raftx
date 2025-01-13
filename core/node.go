@@ -35,53 +35,54 @@ import (
 
 // Node represents a single node in a Raft cluster, encapsulating the core logic for consensus.
 type Node struct {
-	lock              Lock                                            // Synchronization primitive for state transitions.
-	mux               sync.Mutex                                      // Mutex to protect concurrent access to certain fields.
-	tlsConfig         *tls.Config                                     // TLS configuration for secure communication.
-	metrics           raft.Metrics                                    // Contains monitoring information
-	bat               *Bat                                            // Batch processor for handling log entries and network messages.
-	tServer           *tServer                                        // Transport server for handling incoming connections.
-	dataWait          *lock.FastAwait[any]                            // Await structure for waiting on asynchronous operations.
-	numLock           *lock.Numlock                                   // Numeric lock for managing concurrent access to numeric counters.
-	listenAddr        string                                          // Address on which this node listens for incoming connections.
-	votedFor          votedFor                                        // Information about the candidate voted for in the current term.
-	logStorage        stub.LogStorage                                 // Storage system for client command log entries.
-	snapshotMgr       stub.SnapshotManager                            // Manager for handling state snapshots.
-	persistent        stub.Persistent                                 // Persistent storage for Raft's persistent state.
-	applymsg          stub.StateMachine                               // Channel for applying committed logs to the state machine.
-	peers             *peers                                          // Manages a collection of Raft cluster members
-	hbcs              *hashmap.MapL[int64, csNet]                     // Map of heartbeat channels for addrPeers.
-	peersCn           *hashmap.MapL[int64, csNet]                     // Map of connection objects for addrPeers.
-	conns             *hashmap.Map[int64, csNet]                      // Map of connection objects for addrPeers.
-	leases            *hashmap.MapL[int64, int64]                     // Map of lease durations for addrPeers.
-	logEntryBatPool   *hashmap.LimitHashMap[int64, *stub.LogEntryBat] // pool of LogEntryBat object.
-	rxBatPool         *hashmap.LimitHashMap[int64, *stub.RxBat]       // pool of RxBat object.
-	missPeer          *hashmap.MapL[string, int64]                    // Map of missing node
-	electionInterval  time.Duration                                   // Duration between elections.
-	heartbeatInterval time.Duration                                   // Interval at which heartbeats are sent.
-	waitTimeout       time.Duration                                   // Timeout for waiting on certain operations.
-	clientTimeout     time.Duration                                   // Timeout for client operations.
-	becomeId          atomic.Int64                                    // Atomic counter for state transitions.
-	mem               mem                                             // mem is a structure for volatile data
-	memExpiredTime    int64                                           // Expiration time of volatile data
-	memLogEntryLimit  int64                                           // volatile data log capacity
-	heartbeatTime     int64                                           // Timestamp of the last heartbeat received.
-	heartbeatLease    int64                                           // Lease duration for heartbeats.
-	term              int64                                           // Current term of the node.
-	id                int64                                           // Unique identifier for the node.
-	leaderId          int64                                           // ID of the current leader.
-	leaderTime        int64                                           // time for become leader
-	leaderCn          csNet                                           // Connection object for the current leader.
-	state             raft.STATE                                      // Current state of the node (Follower, Candidate, PrePare,  Leader).
-	nodeClose         bool                                            // Flag indicating if the node is closed.
-	standAlone        bool                                            // Flag indicating if the node operates in standalone mode.
-	startTime         int64                                           // time of service start
-	blockVoteTime     int64                                           // time for
-	commitMode        raft.COMMITMODE
-	cpurate           int
-	chanWait          chan struct{}
-	memSync           bool
-	raftxSync         bool
+	lock                 Lock                                            // Synchronization primitive for state transitions.
+	mux                  sync.Mutex                                      // Mutex to protect concurrent access to certain fields.
+	tlsConfig            *tls.Config                                     // TLS configuration for secure communication.
+	metrics              raft.Metrics                                    // Contains monitoring information
+	bat                  *Bat                                            // Batch processor for handling log entries and network messages.
+	tServer              *tServer                                        // Transport server for handling incoming connections.
+	dataWait             *lock.FastAwait[any]                            // Await structure for waiting on asynchronous operations.
+	numLock              *lock.Numlock                                   // Numeric lock for managing concurrent access to numeric counters.
+	listenAddr           string                                          // Address on which this node listens for incoming connections.
+	votedFor             votedFor                                        // Information about the candidate voted for in the current term.
+	logStorage           stub.LogStorage                                 // Storage system for client command log entries.
+	snapshotMgr          stub.SnapshotManager                            // Manager for handling state snapshots.
+	persistent           stub.Persistent                                 // Persistent storage for Raft's persistent state.
+	applymsg             stub.StateMachine                               // Channel for applying committed logs to the state machine.
+	peers                *peers                                          // Manages a collection of Raft cluster members
+	hbcs                 *hashmap.MapL[int64, csNet]                     // Map of heartbeat channels for addrPeers.
+	peersCn              *hashmap.MapL[int64, csNet]                     // Map of connection objects for addrPeers.
+	conns                *hashmap.Map[int64, csNet]                      // Map of connection objects for addrPeers.
+	leases               *hashmap.MapL[int64, int64]                     // Map of lease durations for addrPeers.
+	logEntryBatPool      *hashmap.LimitHashMap[int64, *stub.LogEntryBat] // pool of LogEntryBat object.
+	rxBatPool            *hashmap.LimitHashMap[int64, *stub.RxBat]       // pool of RxBat object.
+	missPeer             *hashmap.MapL[string, int64]                    // Map of missing node
+	electionInterval     time.Duration                                   // Duration between elections.
+	heartbeatInterval    time.Duration                                   // Interval at which heartbeats are sent.
+	waitTimeout          time.Duration                                   // Timeout for waiting on certain operations.
+	clientTimeout        time.Duration                                   // Timeout for client operations.
+	becomeId             atomic.Int64                                    // Atomic counter for state transitions.
+	mem                  mem                                             // mem is a structure for volatile data
+	memExpiredTime       int64                                           // Expiration time of volatile data
+	memLogEntryLimit     int64                                           // volatile data log capacity
+	memLogEntrySyncLimit int64                                           // volatile data log capacity
+	heartbeatTime        int64                                           // Timestamp of the last heartbeat received.
+	heartbeatLease       int64                                           // Lease duration for heartbeats.
+	term                 int64                                           // Current term of the node.
+	id                   int64                                           // Unique identifier for the node.
+	leaderId             int64                                           // ID of the current leader.
+	leaderTime           int64                                           // time for become leader
+	leaderCn             csNet                                           // Connection object for the current leader.
+	state                raft.STATE                                      // Current state of the node (Follower, Candidate, PrePare,  Leader).
+	nodeClose            bool                                            // Flag indicating if the node is closed.
+	standAlone           bool                                            // Flag indicating if the node operates in standalone mode.
+	startTime            int64                                           // time of service start
+	blockVoteTime        int64                                           // time for
+	commitMode           raft.COMMITMODE
+	cpurate              int
+	chanWait             chan struct{}
+	memSync              bool
+	raftxSync            bool
 }
 
 // NewNode initializes a new instance of Node with the provided configuration.
@@ -135,6 +136,12 @@ func NewNode(config *raft.Config) *Node {
 	} else {
 		n.memLogEntryLimit = defaultMemLogEntryLimit
 	}
+	if config.MemLogEntrySyncLimit > 0 {
+		n.memLogEntrySyncLimit = config.MemLogEntrySyncLimit
+	} else {
+		n.memLogEntrySyncLimit = n.memLogEntryLimit / 5
+	}
+
 	n.blockVoteTime = config.BlockVoteTime
 	n.startTime = time.Now().UnixNano()
 	n.mem = newMem(n)
