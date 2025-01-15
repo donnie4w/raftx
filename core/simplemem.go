@@ -445,8 +445,8 @@ func (sm *simpleMem) String() string {
 
 func (sm *simpleMem) UnWatchWithType(key []byte, wt raft.WatchType) {
 	kid := util.FNVHash64(key)
-	sm.watchlock.Lock(int64(kid))
-	defer sm.watchlock.Unlock(int64(kid))
+	lock := sm.watchlock.Lock(int64(kid))
+	defer lock.Unlock()
 	if mm, ok := sm.watchmap.Get(kid); ok {
 		mm.Del(wt)
 	}
@@ -458,8 +458,8 @@ func (sm *simpleMem) UnWatch(key []byte) {
 
 func (sm *simpleMem) Watch(key []byte, watchTypes []raft.WatchType, isSync bool, watchFunc func(key, value []byte, watchType raft.WatchType)) {
 	kid := util.FNVHash64(key)
-	sm.watchlock.Lock(int64(kid))
-	defer sm.watchlock.Unlock(int64(kid))
+	lock := sm.watchlock.Lock(int64(kid))
+	defer lock.Unlock()
 	if mm, ok := sm.watchmap.Get(kid); ok {
 		for _, watchType := range watchTypes {
 			mm.Put(watchType, &watchBean{key: key, fn: watchFunc, sync: isSync})

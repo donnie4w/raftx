@@ -60,8 +60,8 @@ func (n *Node) getAndSetLeaderCsNet() (r csNet, err error) {
 	if r = n.leaderCn; r != nil {
 		return
 	} else if n.leaderId != 0 {
-		n.numLock.Lock(n.leaderId)
-		defer n.numLock.Unlock(n.leaderId)
+		lock := n.numLock.Lock(n.leaderId)
+		defer lock.Unlock()
 		if n.leaderCn == nil {
 			if n.leaderCn, err = n.getCsNetById(n.leaderId); err == nil {
 				return n.leaderCn, nil
@@ -74,8 +74,8 @@ func (n *Node) getAndSetLeaderCsNet() (r csNet, err error) {
 }
 
 func (n *Node) getAnSetHBCsNet(addr string, id int64) (cn csNet, b bool, err error) {
-	n.numLock.Lock(id)
-	defer n.numLock.Unlock(id)
+	lock := n.numLock.Lock(id)
+	defer lock.Unlock()
 	if cn, _ = n.hbcs.Get(id); cn == nil {
 		if cn, err = n.getCsNet(addr); err == nil {
 			n.hbcs.Put(id, cn)
@@ -94,8 +94,8 @@ func (n *Node) getAnSetPeersCnCsNet(id int64) (r csNet, err error) {
 	if cn, ok := n.peersCn.Get(id); ok {
 		return cn, nil
 	} else {
-		n.numLock.Lock(n.id)
-		defer n.numLock.Unlock(n.id)
+		lock := n.numLock.Lock(n.id)
+		defer lock.Unlock()
 		if cn, ok := n.peersCn.Get(id); ok {
 			return cn, nil
 		} else {
